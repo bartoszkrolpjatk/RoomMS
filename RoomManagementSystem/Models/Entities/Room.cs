@@ -6,7 +6,7 @@ public class Room(
     BuildingCode buildingCode,
     int floor,
     uint capacity,
-    bool hasProjektor,
+    bool hasProjector,
     bool isActive)
 {
     public long Id { get; set; } = id;
@@ -14,6 +14,6 @@ public class Room(
     public BuildingCode BuildingCode { get; set; } = buildingCode;
     public int Floor { get; set; } = floor;
     public uint Capacity { get; set; } = capacity;
-    public bool HasProjektor { get; set; } = hasProjektor;
+    public bool HasProjector { get; set; } = hasProjector;
     public bool IsActive { get; set; } = isActive;
 }

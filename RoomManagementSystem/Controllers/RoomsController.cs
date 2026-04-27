@@ -15,15 +15,15 @@ public class RoomsController(IMapper mapper, RoomRepository roomRepository) : Co
     {
         var result = roomRepository.Rooms
             .Where(r => minCapacity == null || r.Capacity >= minCapacity.Value)
-            .Where(r => hasProjector == null || r.HasProjektor == hasProjector.Value)
+            .Where(r => hasProjector == null || r.HasProjector == hasProjector.Value)
             .Where(r => activeOnly == null || !activeOnly.Value || r.IsActive)
             .Select(mapper.Map<RoomDto>)
             .ToList();
         return Ok(result);
     }
 
-    [HttpGet("{id:int}")]
-    public ActionResult<RoomDto> GetRoomById([FromRoute] int id)
+    [HttpGet("{id:long}")]
+    public ActionResult<RoomDto> GetRoomById([FromRoute] long id)
     {
         var roomById = roomRepository.Rooms.FirstOrDefault(r => r.Id == id);
         if (roomById == null)
