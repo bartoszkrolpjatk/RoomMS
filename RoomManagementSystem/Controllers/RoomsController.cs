@@ -16,4 +16,14 @@ public class RoomsController(IMapper mapper, RoomRepository roomRepository) : Co
             .Select(mapper.Map<RoomDto>)
             .ToList();
     }
+
+    [HttpGet("{id:int}")]
+    public ActionResult<RoomDto> GetRoomById([FromRoute] int id)
+    {
+        var result = roomRepository.Rooms.FirstOrDefault(r => r.Id == id);
+        if (result == null)
+            return NotFound();
+
+        return mapper.Map<RoomDto>(result);
+    }
 }
