@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using RoomManagementSystem.Models.Dtos;
+using RoomManagementSystem.Models.Entities;
 using RoomManagementSystem.Repositories;
 
 namespace RoomManagementSystem.Controllers;
@@ -25,5 +26,14 @@ public class RoomsController(IMapper mapper, RoomRepository roomRepository) : Co
             return NotFound();
 
         return mapper.Map<RoomDto>(result);
+    }
+
+    [HttpGet("{buildingCode}")]
+    public ActionResult<List<RoomDto>> GetRoomsByBuildingCode([FromRoute] BuildingCode buildingCode)
+    {
+        return roomRepository.Rooms
+            .Where(r => r.BuildingCode == buildingCode)
+            .Select(mapper.Map<RoomDto>)
+            .ToList();
     }
 }
