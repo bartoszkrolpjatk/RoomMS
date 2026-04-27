@@ -11,29 +11,34 @@ namespace RoomManagementSystem.Controllers;
 public class RoomsController(IMapper mapper, RoomRepository roomRepository) : ControllerBase
 {
     [HttpGet]
-    public ActionResult<List<RoomDto>> GetAllRooms()
+    public ActionResult<List<RoomDto>> GetRooms([FromQuery] uint? minCapacity, [FromQuery] bool? hasProjector, [FromQuery] bool? activeOnly)
     {
-        return roomRepository.Rooms
+        var result = roomRepository.Rooms
+            .Where(r => minCapacity == null || r.Capacity >= minCapacity.Value)
+            .Where(r => hasProjector == null || r.HasProjektor == hasProjector.Value)
+            .Where(r => activeOnly == null || !activeOnly.Value || r.IsActive)
             .Select(mapper.Map<RoomDto>)
             .ToList();
+        return Ok(result);
     }
 
     [HttpGet("{id:int}")]
     public ActionResult<RoomDto> GetRoomById([FromRoute] int id)
     {
-        var result = roomRepository.Rooms.FirstOrDefault(r => r.Id == id);
-        if (result == null)
+        var roomById = roomRepository.Rooms.FirstOrDefault(r => r.Id == id);
+        if (roomById == null)
             return NotFound();
 
-        return mapper.Map<RoomDto>(result);
+        return Ok(mapper.Map<RoomDto>(roomById));
     }
 
     [HttpGet("{buildingCode}")]
     public ActionResult<List<RoomDto>> GetRoomsByBuildingCode([FromRoute] BuildingCode buildingCode)
     {
-        return roomRepository.Rooms
+        var result = roomRepository.Rooms
             .Where(r => r.BuildingCode == buildingCode)
             .Select(mapper.Map<RoomDto>)
             .ToList();
+        return Ok(result);
     }
 }
