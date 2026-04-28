@@ -1,4 +1,4 @@
-﻿namespace RoomManagementSystem.Models.Entities;
+﻿namespace RoomManagementSystem.Models;
 
 public enum BuildingCode
 {

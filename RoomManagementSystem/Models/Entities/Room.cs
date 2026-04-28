@@ -1,19 +1,14 @@
 ﻿namespace RoomManagementSystem.Models.Entities;
 
-public class Room(
-    long id,
-    string name,
-    BuildingCode buildingCode,
-    int floor,
-    uint capacity,
-    bool hasProjector,
-    bool isActive)
+public class Room
 {
-    public long Id { get; set; } = id;
-    public string Name { get; set; } = name;
-    public BuildingCode BuildingCode { get; set; } = buildingCode;
-    public int Floor { get; set; } = floor;
-    public uint Capacity { get; set; } = capacity;
-    public bool HasProjector { get; set; } = hasProjector;
-    public bool IsActive { get; set; } = isActive;
+    public required long Id { get; set; }
+    public required string Name { get; set; }
+    public required BuildingCode BuildingCode { get; set; }
+    public required int Floor { get; set; }
+    public required uint Capacity { get; set; }
+    public required bool HasProjector { get; set; }
+    public required bool IsActive { get; set; }
+
+    public Room() { }
 }

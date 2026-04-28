@@ -1,6 +1,4 @@
-﻿using RoomManagementSystem.Models.Entities;
-
-namespace RoomManagementSystem.Models.Dtos;
+﻿namespace RoomManagementSystem.Models.Dtos;
 
 public record RoomDto(
     string Name,

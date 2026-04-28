@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using RoomManagementSystem.Models;
 using RoomManagementSystem.Models.Dtos;
 using RoomManagementSystem.Models.Entities;
 using RoomManagementSystem.Repositories;
@@ -11,7 +12,8 @@ namespace RoomManagementSystem.Controllers;
 public class RoomsController(IMapper mapper, RoomRepository roomRepository) : ControllerBase
 {
     [HttpGet]
-    public ActionResult<List<RoomDto>> GetRooms([FromQuery] uint? minCapacity, [FromQuery] bool? hasProjector, [FromQuery] bool? activeOnly)
+    public ActionResult<List<RoomDto>> GetRooms([FromQuery] uint? minCapacity, [FromQuery] bool? hasProjector,
+        [FromQuery] bool? activeOnly)
     {
         var result = roomRepository.Rooms
             .Where(r => minCapacity == null || r.Capacity >= minCapacity.Value)
@@ -40,5 +42,14 @@ public class RoomsController(IMapper mapper, RoomRepository roomRepository) : Co
             .Select(mapper.Map<RoomDto>)
             .ToList();
         return Ok(result);
+    }
+
+    [HttpPost]
+    public IActionResult CreateRoom([FromBody] CreateRoomDto createRoomDto)
+    {
+        var newId = roomRepository.Rooms.Count + 1;
+        var newRoom = mapper.Map<Room>(createRoomDto);
+        newRoom.Id = newId;
+        return CreatedAtAction(nameof(GetRoomById), new { id = newRoom.Id }, newRoom);
     }
 }

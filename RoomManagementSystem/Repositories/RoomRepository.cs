@@ -1,4 +1,5 @@
-﻿using RoomManagementSystem.Models.Entities;
+﻿using RoomManagementSystem.Models;
+using RoomManagementSystem.Models.Entities;
 
 namespace RoomManagementSystem.Repositories;
 
@@ -6,12 +7,34 @@ public class RoomRepository
 {
     private readonly List<Room> _rooms =
     [
-        new(1, "230", BuildingCode.B, 2, 15, true, true),
-        new(2, "361", BuildingCode.A, 3, 30, true, true),
-        new(3, "4", BuildingCode.B, -1, 8, true, true),
-        new(4, "160", BuildingCode.A, 1, 20, false, false),
-        new(5, "313", BuildingCode.H, 4, 18, false, true)
+        new()
+        {
+            Id = 1, Name = "230", BuildingCode = BuildingCode.B, Floor = 2, Capacity = 15, HasProjector = true,
+            IsActive = true
+        },
+        new()
+        {
+            Id = 2, Name = "361", BuildingCode = BuildingCode.A, Floor = 3, Capacity = 30, HasProjector = true,
+            IsActive = true
+        },
+        new()
+        {
+            Id = 3, Name = "4", BuildingCode = BuildingCode.B, Floor = -1, Capacity = 8, HasProjector = true,
+            IsActive = true
+        },
+        new()
+        {
+            Id = 4, Name = "160", BuildingCode = BuildingCode.A, Floor = 1, Capacity = 20, HasProjector = false,
+            IsActive = false
+        },
+        new()
+        {
+            Id = 5, Name = "313", BuildingCode = BuildingCode.H, Floor = 4, Capacity = 18, HasProjector = false,
+            IsActive = true
+        }
     ];
 
     public IReadOnlyList<Room> Rooms => _rooms.AsReadOnly();
+
+    public void AddRoom(Room room) => _rooms.Add(room);
 }
