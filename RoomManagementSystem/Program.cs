@@ -20,6 +20,7 @@ builder.Services.AddRouting(options =>
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddSingleton<RoomRepository>();
+builder.Services.AddSingleton<ReservationRepository>();
 
 var app = builder.Build();
 

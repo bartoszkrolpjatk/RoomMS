@@ -1,0 +1,13 @@
+﻿using AutoMapper;
+using RoomManagementSystem.Models.Dtos;
+using RoomManagementSystem.Models.Entities;
+
+namespace RoomManagementSystem.Profiles;
+
+public class ReservationProfile : Profile
+{
+    public ReservationProfile()
+    {
+        CreateMap<Reservation, ReservationDto>();
+    }
+}
