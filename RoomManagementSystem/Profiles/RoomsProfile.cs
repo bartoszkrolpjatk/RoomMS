@@ -10,5 +10,7 @@ public class RoomsProfile : Profile
     {
         CreateMap<Room, RoomDto>();
         CreateMap<CreateRoomDto, Room>();
+        CreateMap<UpdateRoomDto, Room>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
     }
 }

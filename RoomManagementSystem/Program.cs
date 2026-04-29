@@ -19,7 +19,7 @@ builder.Services.AddRouting(options =>
 });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<RoomRepository>();
+builder.Services.AddSingleton<RoomRepository>();
 
 var app = builder.Build();
 

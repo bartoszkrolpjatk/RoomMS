@@ -50,6 +50,18 @@ public class RoomsController(IMapper mapper, RoomRepository roomRepository) : Co
         var newId = roomRepository.Rooms.Count + 1;
         var newRoom = mapper.Map<Room>(createRoomDto);
         newRoom.Id = newId;
+        roomRepository.AddRoom(newRoom);
         return CreatedAtAction(nameof(GetRoomById), new { id = newRoom.Id }, newRoom);
+    }
+
+    [HttpPut("{id:long}")]
+    public IActionResult UpdateRoom([FromRoute] long id, [FromBody] UpdateRoomDto updateRoomDto)
+    {
+        var roomById = roomRepository.Rooms.FirstOrDefault(r => r.Id == id);
+        if (roomById == null)
+            return NotFound();
+
+        mapper.Map(updateRoomDto, roomById);
+        return NoContent();
     }
 }
