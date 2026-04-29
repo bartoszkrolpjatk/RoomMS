@@ -64,4 +64,15 @@ public class RoomsController(IMapper mapper, RoomRepository roomRepository) : Co
         mapper.Map(updateRoomDto, roomById);
         return NoContent();
     }
+
+    [HttpDelete("{id:long}")]
+    public IActionResult DeleteRoom([FromRoute] long id)
+    {
+        var roomById = roomRepository.Rooms.FirstOrDefault(r => r.Id == id);
+        if (roomById == null)
+            return NotFound();
+        
+        roomRepository.RemoveRoom(roomById);
+        return NoContent();
+    }
 }
