@@ -66,7 +66,7 @@ public class RoomsController(IMapper mapper, RoomRepository roomRepository) : Co
     }
 
     [HttpDelete("{id:long}")]
-    public IActionResult DeleteRoom([FromRoute] long id)
+    public IActionResult DeleteRoom([FromRoute] long id) //todo: validate existing reservations
     {
         var roomById = roomRepository.Rooms.FirstOrDefault(r => r.Id == id);
         if (roomById == null)
