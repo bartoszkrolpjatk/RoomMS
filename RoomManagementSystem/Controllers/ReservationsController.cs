@@ -96,7 +96,7 @@ public class ReservationsController(
         return true;
     }
 
-    private bool TimeValid(DateOnly date, TimeOnly startTime, TimeOnly endTime, long roomId, out string? errorMessage)
+    private bool TimeValid(DateOnly date, TimeOnly startTime, TimeOnly endTime, long roomId, out string? errorMessage) //todo 409 when collision detected
     {
         errorMessage = null;
         if (endTime <= startTime)

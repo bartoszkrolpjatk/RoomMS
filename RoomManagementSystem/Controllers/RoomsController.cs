@@ -9,7 +9,7 @@ namespace RoomManagementSystem.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
-public class RoomsController(IMapper mapper, RoomRepository roomRepository) : ControllerBase
+public class RoomsController(IMapper mapper, RoomRepository roomRepository, ReservationRepository reservationRepository) : ControllerBase
 {
     [HttpGet]
     public ActionResult<List<RoomDto>> GetRooms([FromQuery] uint? minCapacity, [FromQuery] bool? hasProjector,
@@ -66,11 +66,16 @@ public class RoomsController(IMapper mapper, RoomRepository roomRepository) : Co
     }
 
     [HttpDelete("{id:long}")]
-    public IActionResult DeleteRoom([FromRoute] long id) //todo: validate existing reservations
+    public IActionResult DeleteRoom([FromRoute] long id)
     {
         var roomById = roomRepository.Rooms.FirstOrDefault(r => r.Id == id);
         if (roomById == null)
             return NotFound();
+
+        var futureReservationExists =
+            reservationRepository.Reservations.Any(r => r.RoomId == id && r.Date.ToDateTime(r.EndTime) > DateTime.Now);
+        if (futureReservationExists)
+            return Conflict();
         
         roomRepository.RemoveRoom(roomById);
         return NoContent();
