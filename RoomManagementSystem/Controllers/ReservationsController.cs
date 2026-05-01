@@ -66,6 +66,17 @@ public class ReservationsController(
         return NoContent();
     }
 
+    [HttpDelete("{id:long}")]
+    public IActionResult DeleteReservation([FromRoute] long id)
+    {
+        var reservationById = reservationRepository.Reservations.FirstOrDefault(r => r.Id == id);
+        if (reservationById == null)
+            return NotFound();
+        
+        reservationRepository.RemoveReservation(reservationById);
+        return NoContent();
+    }
+
     private bool RoomValid(long roomId, out string? errorMessage)
     {
         errorMessage = null;

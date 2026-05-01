@@ -37,4 +37,6 @@ public class ReservationRepository
     public IReadOnlyList<Reservation> Reservations => _reservations.AsReadOnly();
 
     public void AddReservation(Reservation reservation) => _reservations.Add(reservation);
+    
+    public void RemoveReservation(Reservation reservation) => _reservations.Remove(reservation);
 }
