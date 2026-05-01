@@ -41,8 +41,11 @@ public class ReservationsController(
     [HttpPost]
     public IActionResult CreateReservation([FromBody] CreateReservationDto createReservationDto)
     {
-        if (!TimeValid(createReservationDto.Date, createReservationDto.StartTime, createReservationDto.EndTime, createReservationDto.RoomId, out var errorMessage) ||
-            !RoomValid(createReservationDto.RoomId, out errorMessage))
+        if (CollisionDetected(createReservationDto.Date, createReservationDto.StartTime, createReservationDto.EndTime, createReservationDto.RoomId))
+            return Conflict();
+        if (!RoomExists(createReservationDto.RoomId, out var room))
+            return NotFound("Room not found");
+        if (!RequestValid(createReservationDto.StartTime, createReservationDto.EndTime, room, out var errorMessage))
             return BadRequest(errorMessage);
 
         var newReservation = mapper.Map<Reservation>(createReservationDto);
@@ -57,9 +60,12 @@ public class ReservationsController(
         var reservationById = reservationRepository.Reservations.FirstOrDefault(r => r.Id == id);
         if (reservationById == null)
             return NotFound();
-        
-        if (!TimeValid(updateReservationDto.Date, updateReservationDto.StartTime, updateReservationDto.EndTime, updateReservationDto.RoomId, out var errorMessage) ||
-            !RoomValid(updateReservationDto.RoomId, out errorMessage))
+
+        if (CollisionDetected(updateReservationDto.Date, updateReservationDto.StartTime, updateReservationDto.EndTime, updateReservationDto.RoomId))
+            return Conflict();
+        if (!RoomExists(updateReservationDto.RoomId, out var room))
+            return NotFound("Room not found");
+        if (!RequestValid(updateReservationDto.StartTime, updateReservationDto.EndTime, room, out var errorMessage))
             return BadRequest(errorMessage);
 
         mapper.Map(updateReservationDto, reservationById);
@@ -72,45 +78,34 @@ public class ReservationsController(
         var reservationById = reservationRepository.Reservations.FirstOrDefault(r => r.Id == id);
         if (reservationById == null)
             return NotFound();
-        
+
         reservationRepository.RemoveReservation(reservationById);
         return NoContent();
     }
 
-    private bool RoomValid(long roomId, out string? errorMessage)
+    private bool CollisionDetected(DateOnly date, TimeOnly startTime, TimeOnly endTime, long roomId)
+    {
+        return  reservationRepository.Reservations.Any(r =>
+            r.Date == date && r.RoomId == roomId && startTime < r.EndTime && r.StartTime < endTime);
+    }
+
+    private bool RoomExists(long roomId, out Room? room)
+    {
+        room = roomRepository.Rooms.FirstOrDefault(r => r.Id == roomId);
+        return room != null;
+    }
+
+    private bool RequestValid(TimeOnly startTime, TimeOnly endTime, Room room, out string? errorMessage)
     {
         errorMessage = null;
-        var roomById = roomRepository.Rooms.FirstOrDefault(r => r.Id == roomId);
-        if (roomById == null)
-        {
-            errorMessage = "Room does not exist!";
-            return false;
-        }
-
-        if (!roomById.IsActive)
+        if (!room.IsActive)
         {
             errorMessage = "Room is inactive!";
             return false;
         }
-
-        return true;
-    }
-
-    private bool TimeValid(DateOnly date, TimeOnly startTime, TimeOnly endTime, long roomId, out string? errorMessage) //todo 409 when collision detected
-    {
-        errorMessage = null;
         if (endTime <= startTime)
         {
             errorMessage = "EndTime must be greater than StartTime";
-            return false;
-        }
-
-        var conflictingReservation = reservationRepository.Reservations.FirstOrDefault(r => 
-            r.Date == date && r.RoomId == roomId && startTime < r.EndTime && r.StartTime < endTime);
-        if (conflictingReservation != null)
-        {
-            errorMessage =
-                $"Date/Time conflict detected between new reservation and existing one id: {conflictingReservation.Id}";
             return false;
         }
 
