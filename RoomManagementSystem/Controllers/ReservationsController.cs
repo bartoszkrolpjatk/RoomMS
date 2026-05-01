@@ -41,8 +41,8 @@ public class ReservationsController(
     [HttpPost]
     public IActionResult CreateReservation([FromBody] CreateReservationDto createReservationDto)
     {
-        if (!TimeValid(createReservationDto, out var errorMessage) ||
-            !RoomValid(createReservationDto, out errorMessage))
+        if (!TimeValid(createReservationDto.Date, createReservationDto.StartTime, createReservationDto.EndTime, createReservationDto.RoomId, out var errorMessage) ||
+            !RoomValid(createReservationDto.RoomId, out errorMessage))
             return BadRequest(errorMessage);
 
         var newReservation = mapper.Map<Reservation>(createReservationDto);
@@ -51,10 +51,25 @@ public class ReservationsController(
         return CreatedAtAction(nameof(GetReservationById), new { id = newReservation.Id }, newReservation);
     }
 
-    private bool RoomValid(CreateReservationDto dto, out string? errorMessage)
+    [HttpPut("{id:long}")]
+    public IActionResult UpdateReservation([FromRoute] long id, [FromBody] UpdateReservationDto updateReservationDto)
+    {
+        var reservationById = reservationRepository.Reservations.FirstOrDefault(r => r.Id == id);
+        if (reservationById == null)
+            return NotFound();
+        
+        if (!TimeValid(updateReservationDto.Date, updateReservationDto.StartTime, updateReservationDto.EndTime, updateReservationDto.RoomId, out var errorMessage) ||
+            !RoomValid(updateReservationDto.RoomId, out errorMessage))
+            return BadRequest(errorMessage);
+
+        mapper.Map(updateReservationDto, reservationById);
+        return NoContent();
+    }
+
+    private bool RoomValid(long roomId, out string? errorMessage)
     {
         errorMessage = null;
-        var roomById = roomRepository.Rooms.FirstOrDefault(r => r.Id == dto.RoomId);
+        var roomById = roomRepository.Rooms.FirstOrDefault(r => r.Id == roomId);
         if (roomById == null)
         {
             errorMessage = "Room does not exist!";
@@ -70,17 +85,17 @@ public class ReservationsController(
         return true;
     }
 
-    private bool TimeValid(CreateReservationDto dto, out string? errorMessage)
+    private bool TimeValid(DateOnly date, TimeOnly startTime, TimeOnly endTime, long roomId, out string? errorMessage)
     {
         errorMessage = null;
-        if (dto.EndTime <= dto.StartTime)
+        if (endTime <= startTime)
         {
             errorMessage = "EndTime must be greater than StartTime";
             return false;
         }
 
         var conflictingReservation = reservationRepository.Reservations.FirstOrDefault(r => 
-            r.Date == dto.Date && r.RoomId == dto.RoomId && dto.StartTime < r.EndTime && r.StartTime < dto.EndTime);
+            r.Date == date && r.RoomId == roomId && startTime < r.EndTime && r.StartTime < endTime);
         if (conflictingReservation != null)
         {
             errorMessage =

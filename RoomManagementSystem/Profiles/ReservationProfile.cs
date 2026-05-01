@@ -10,5 +10,7 @@ public class ReservationProfile : Profile
     {
         CreateMap<Reservation, ReservationDto>();
         CreateMap<CreateReservationDto, Reservation>();
+        CreateMap<UpdateReservationDto, Reservation>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
     }
 }

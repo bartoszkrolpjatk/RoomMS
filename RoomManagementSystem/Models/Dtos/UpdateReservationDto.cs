@@ -2,7 +2,7 @@
 
 namespace RoomManagementSystem.Models.Dtos;
 
-public record CreateReservationDto
+public record UpdateReservationDto
 {
     [Required] public required long RoomId { get; set; }
     [Required] public required string OrganizerName { get; set; }
@@ -11,4 +11,4 @@ public record CreateReservationDto
     [Required] public required TimeOnly StartTime { get; set; }
     [Required] public required TimeOnly EndTime { get; set; }
     [Required] public required ReservationStatus Status { get; set; }
-};
+}

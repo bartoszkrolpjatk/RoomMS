@@ -2,7 +2,7 @@
 
 namespace RoomManagementSystem.Models.Dtos;
 
-public record UpdateRoomDto(
+public record UpdateRoomDto(//todo: remove nullable types
     [Required]
     [StringLength(20, MinimumLength = 1)]
     string? Name,
